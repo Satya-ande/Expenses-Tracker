@@ -1,0 +1,242 @@
+"use client"
+
+import { useState } from "react"
+import { CalendarIcon, Check } from "lucide-react"
+import { format } from "date-fns"
+import { useSWRConfig } from "swr"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { cn } from "@/lib/utils"
+import { expensesApi } from "@/lib/api"
+import { CATEGORIES } from "@/lib/types"
+import type { ExpenseCreateRequest } from "@/lib/types"
+
+type FormErrors = {
+  title?: string
+  amount?: string
+  category?: string
+  date?: string
+}
+
+export function AddExpenseForm() {
+  const { mutate } = useSWRConfig()
+  const [title, setTitle] = useState("")
+  const [amount, setAmount] = useState("")
+  const [category, setCategory] = useState("")
+  const [date, setDate] = useState<Date>()
+  const [notes, setNotes] = useState("")
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [submitted, setSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  function resetForm() {
+    setTitle("")
+    setAmount("")
+    setCategory("")
+    setDate(undefined)
+    setNotes("")
+    setSubmitted(false)
+    setIsLoading(false)
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const newErrors: FormErrors = {}
+
+    if (!title.trim()) newErrors.title = "Title is required"
+    if (!amount || parseFloat(amount) <= 0) newErrors.amount = "Please enter a valid amount"
+    if (!category) newErrors.category = "Please select a category"
+    if (!date) newErrors.date = "Please select a date"
+
+    setErrors(newErrors)
+    if (Object.keys(newErrors).length > 0) return
+
+    setIsLoading(true)
+
+    const payload: ExpenseCreateRequest = {
+      title: title.trim(),
+      amount: parseFloat(amount),
+      category,
+      date: format(date!, "yyyy-MM-dd"),
+      notes: notes.trim() || undefined,
+    }
+
+    try {
+      // Replace with real API call once Spring Boot is running:
+      // await expensesApi.create(payload)
+
+      // Mock: simulate network delay
+      await new Promise((r) => setTimeout(r, 500))
+      void payload
+      void expensesApi
+
+      // Revalidate all expense-related SWR caches
+      await mutate((key: string) => typeof key === "string" && key.startsWith("expenses"), undefined, { revalidate: true })
+      await mutate("dashboard-summary")
+      await mutate("monthly-expenses")
+      await mutate("category-expenses")
+
+      setSubmitted(true)
+      setTimeout(resetForm, 2000)
+    } catch {
+      setErrors({ title: "Failed to add expense. Please try again." })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <Card className="shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-card-foreground">
+            New Expense
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {submitted ? (
+            <div className="flex flex-col items-center gap-3 py-12">
+              <div className="size-12 rounded-full bg-success/10 flex items-center justify-center">
+                <Check className="size-6 text-success" />
+              </div>
+              <p className="text-base font-medium text-card-foreground">
+                Expense added successfully!
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Your expense has been recorded.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="title">Expense Title</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g. Grocery Shopping"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value)
+                    if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }))
+                  }}
+                  className={errors.title ? "border-destructive" : ""}
+                />
+                {errors.title && <p className="text-xs text-destructive">{errors.title}</p>}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="amount">Amount ($)</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    value={amount}
+                    onChange={(e) => {
+                      setAmount(e.target.value)
+                      if (errors.amount) setErrors((prev) => ({ ...prev, amount: undefined }))
+                    }}
+                    className={errors.amount ? "border-destructive" : ""}
+                  />
+                  {errors.amount && <p className="text-xs text-destructive">{errors.amount}</p>}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label>Category</Label>
+                  <Select
+                    value={category}
+                    onValueChange={(val) => {
+                      setCategory(val)
+                      if (errors.category) setErrors((prev) => ({ ...prev, category: undefined }))
+                    }}
+                  >
+                    <SelectTrigger
+                      className={cn("w-full", errors.category && "border-destructive")}
+                    >
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.category && <p className="text-xs text-destructive">{errors.category}</p>}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label>Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !date && "text-muted-foreground",
+                        errors.date && "border-destructive"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 size-4" />
+                      {date ? format(date, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={(d) => {
+                        setDate(d)
+                        if (errors.date) setErrors((prev) => ({ ...prev, date: undefined }))
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                {errors.date && <p className="text-xs text-destructive">{errors.date}</p>}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="notes">Notes (optional)</Label>
+                <Textarea
+                  id="notes"
+                  placeholder="Add any additional notes..."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full sm:w-auto sm:self-end mt-2"
+                disabled={isLoading}
+              >
+                {isLoading ? "Adding..." : "Add Expense"}
+              </Button>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
