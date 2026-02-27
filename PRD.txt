@@ -1,0 +1,30 @@
+2. Executive Summary
+SpendWise AI is a mobile-first expense management platform that uses AI to categorize spending and provide predictive financial insights. The goal is to move away from manual "bookkeeping" and toward "automated financial coaching."
+3. Tech Stack Recommendation
+To ensure scalability, real-time sync, and rapid development, I recommend the following stack:
+ * Frontend: Next.js (PWA) web-first.
+ * Backend: Node.js with TypeScript (Robust and fast).
+ * Database: PostgreSQL (for structured financial data) with Prisma ORM.
+ * Auth: Clerk or Firebase Auth (Biometric support out of the box).
+ * AI/OCR: Google Document AI.
+ * Banking: Plaid API (to sync real-world transactions).
+ * Infrastructure: Vercel or AWS Amplify.
+4. Functional Requirements
+4.1 User Management
+ * FR1: User must be able to sign up via Email, Google, or Apple ID.
+ * FR2: User must be able to enable Biometric Lock (FaceID/Fingerprint).
+ * FR3: User must be able to set a "Home Currency" and "Local Currency."
+4.2 Core Tracking & Automation
+ * FR4: One-Tap Add: A "Quick Add" widget for manual entries.
+ * FR5: AI Receipt Scanner: User uploads a photo; the system extracts Merchant, Amount, and Category using OCR.
+ * FR6: Bank Sync: Automatic fetching of transactions via Plaid API.
+ * FR7: Smart Categorization: AI-driven tagging (e.g., "Starbucks" \rightarrow "Food & Drink").
+4.3 Analytics & Insights
+ * FR8: Spending Trends: Weekly/Monthly bar charts and category pie charts.
+ * FR9: Predictive Alerts: Notifications like "You've spent 80% of your dining budget with 10 days left."
+ * FR10: Subscription Manager: A dedicated list of recurring payments with an "unsubscribe" reminder.
+5. Non-Functional Requirements
+ * Security: AES-256 encryption for all stored financial data.
+ * Performance: App must launch and be interactive in under 2 seconds.
+ * Latency: Receipt processing should take no more than 5 seconds.
+ * Compliance: GDPR and CCPA data deletion options.
