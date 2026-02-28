@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react"
 import { Search, Pencil, Trash2 } from "lucide-react"
 import { format, parseISO } from "date-fns"
-import { useSWRConfig } from "swr"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -35,12 +34,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useExpenses } from "@/hooks/use-expenses"
-import { expensesApi } from "@/lib/api"
+import { useExpenseMutations } from "@/hooks/use-expense-mutations"
 import { CATEGORIES, CATEGORY_BADGE_CLASSES } from "@/lib/types"
 import type { Expense } from "@/lib/types"
 
 export function ExpensesTable() {
-  const { mutate } = useSWRConfig()
+  const { deleteExpense } = useExpenseMutations()
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
@@ -80,18 +79,7 @@ export function ExpensesTable() {
 
   async function handleDelete(expense: Expense) {
     try {
-      // Replace with real API call once Spring Boot is running:
-      // await expensesApi.delete(expense.id)
-
-      void expensesApi
-
-      // Optimistically remove from cache
-      await mutate(
-        (key: string) => typeof key === "string" && key.startsWith("expenses"),
-        undefined,
-        { revalidate: true }
-      )
-      await mutate("dashboard-summary")
+      await deleteExpense(expense.id)
     } catch {
       // Handle error — e.g., show a toast
     }

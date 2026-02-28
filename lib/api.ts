@@ -12,10 +12,8 @@ import type {
 } from "./types"
 
 // ─── Base Configuration ──────────────────────────────────────────
-// Point this to your Spring Boot backend URL.
-// In production, set NEXT_PUBLIC_API_BASE_URL in your environment.
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api"
+// Track A creates Next.js API routes at /api/*. Override with NEXT_PUBLIC_API_BASE_URL if needed.
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api"
 
 // ─── HTTP helper ─────────────────────────────────────────────────
 
