@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select"
 import { useSettings } from "@/hooks/use-expenses"
 import { settingsApi } from "@/lib/api"
+import { PlaidLinkButton } from "@/components/plaid-link-button"
 
 export default function SettingsPage() {
   const { mutate } = useSWRConfig()
@@ -93,6 +94,21 @@ export default function SettingsPage() {
           <Button className="self-end" onClick={handleSave} disabled={saving}>
             {saved ? "Saved!" : saving ? "Saving..." : "Save Changes"}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Bank Connections */}
+      <Card className="shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-card-foreground">
+            Bank Connections
+          </CardTitle>
+          <CardDescription>
+            Connect your bank to automatically sync transactions (Track A backend)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PlaidLinkButton />
         </CardContent>
       </Card>
 

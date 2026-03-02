@@ -1,6 +1,7 @@
 import useSWR from "swr"
 import { dashboardApi, expensesApi, settingsApi } from "@/lib/api"
 import { MOCK_DATA } from "@/lib/mock-data"
+import { mockStore } from "@/lib/mock-store"
 import type {
   DashboardSummary,
   MonthlyExpense,
@@ -11,7 +12,7 @@ import type {
 } from "@/lib/types"
 
 // ─── Feature flag ────────────────────────────────────────────────
-// Set to true once the Spring Boot backend is running.
+// Set to true once Track A's Next.js API routes are running.
 const USE_API = process.env.NEXT_PUBLIC_USE_API === "true"
 
 // ─── Helpers ─────────────────────────────────────────────────────
@@ -19,12 +20,21 @@ const USE_API = process.env.NEXT_PUBLIC_USE_API === "true"
 function useMockOrApi<T>(
   key: string | null,
   apiFn: () => Promise<T>,
-  mockData: T
+  mockDataOrGetter: T | (() => T)
 ) {
-  return useSWR<T>(key, USE_API ? () => apiFn() : () => Promise.resolve(mockData), {
-    revalidateOnFocus: false,
-    fallbackData: mockData,
-  })
+  const getMock = () =>
+    typeof mockDataOrGetter === "function"
+      ? (mockDataOrGetter as () => T)()
+      : mockDataOrGetter
+  return useSWR<T>(
+    key,
+    USE_API ? () => apiFn() : () => Promise.resolve(getMock()),
+    { revalidateOnFocus: false, fallbackData: getMock() }
+  )
+}
+
+function getMockExpenses(): Expense[] {
+  return mockStore.getAll()
 }
 
 // ─── Dashboard hooks ─────────────────────────────────────────────
@@ -79,7 +89,7 @@ export function useExpenses(params?: {
   return useMockOrApi<Expense[]>(
     key,
     () => expensesApi.getAll(params),
-    MOCK_DATA.expenses
+    getMockExpenses
   )
 }
 
@@ -87,7 +97,7 @@ export function useRecentExpenses(limit = 7) {
   return useMockOrApi<Expense[]>(
     `expenses-recent-${limit}`,
     () => expensesApi.getRecent(limit),
-    MOCK_DATA.expenses.slice(0, limit)
+    () => getMockExpenses().slice(0, limit)
   )
 }
 
@@ -95,7 +105,7 @@ export function useTopExpenses(limit = 5) {
   return useMockOrApi<Expense[]>(
     `expenses-top-${limit}`,
     () => expensesApi.getTopByAmount(limit),
-    [...MOCK_DATA.expenses].sort((a, b) => b.amount - a.amount).slice(0, limit)
+    () => [...getMockExpenses()].sort((a, b) => b.amount - a.amount).slice(0, limit)
   )
 }
 

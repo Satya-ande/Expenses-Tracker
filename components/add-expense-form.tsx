@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { CalendarIcon, Check } from "lucide-react"
+import { CalendarIcon, Check, Receipt } from "lucide-react"
 import { format } from "date-fns"
-import { useSWRConfig } from "swr"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,7 +22,8 @@ import {
 } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
-import { expensesApi } from "@/lib/api"
+import { useExpenseMutations } from "@/hooks/use-expense-mutations"
+import { ReceiptUpload } from "@/components/receipt-upload"
 import { CATEGORIES } from "@/lib/types"
 import type { ExpenseCreateRequest } from "@/lib/types"
 
@@ -35,7 +35,7 @@ type FormErrors = {
 }
 
 export function AddExpenseForm() {
-  const { mutate } = useSWRConfig()
+  const { addExpense } = useExpenseMutations()
   const [title, setTitle] = useState("")
   const [amount, setAmount] = useState("")
   const [category, setCategory] = useState("")
@@ -78,20 +78,7 @@ export function AddExpenseForm() {
     }
 
     try {
-      // Replace with real API call once Spring Boot is running:
-      // await expensesApi.create(payload)
-
-      // Mock: simulate network delay
-      await new Promise((r) => setTimeout(r, 500))
-      void payload
-      void expensesApi
-
-      // Revalidate all expense-related SWR caches
-      await mutate((key: string) => typeof key === "string" && key.startsWith("expenses"), undefined, { revalidate: true })
-      await mutate("dashboard-summary")
-      await mutate("monthly-expenses")
-      await mutate("category-expenses")
-
+      await addExpense(payload)
       setSubmitted(true)
       setTimeout(resetForm, 2000)
     } catch {
@@ -124,6 +111,20 @@ export function AddExpenseForm() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <Label className="flex items-center gap-2">
+                  <Receipt className="size-4" />
+                  Upload Receipt (optional)
+                </Label>
+                <ReceiptUpload
+                  onExtract={(data) => {
+                    if (data.merchant) setTitle(data.merchant)
+                    if (data.amount && data.amount > 0) setAmount(String(data.amount))
+                    if (data.category) setCategory(data.category)
+                  }}
+                />
+              </div>
+
               <div className="flex flex-col gap-2">
                 <Label htmlFor="title">Expense Title</Label>
                 <Input

@@ -1,0 +1,38 @@
+# SpendWise AI Development Tasks (Parallel Tracks)
+
+To avoid merge conflicts, work is split into two distinct tracks. **Developer A (You)** will handle the Backend, Database, and API integrations. **Developer B (Your Partner)** will handle the Frontend, UI components, and state management.
+
+## Track A: Backend, Data, & APIs (Your Tasks)
+Branch prefix: `backend/*` or `feature/*-api`
+
+- [ ] **Phase A1: Infrastructure setup**
+  - [ ] Set up PostgreSQL database (Neon/Supabase)
+  - [ ] Initialize Prisma ORM and create `schema.prisma` (User, Transaction, Category models)
+  - [ ] Configure Clerk Auth backend webhooks
+- [ ] **Phase A2: Core APIs**
+  - [ ] Create API route for CRUD operations on expenses (`/api/expenses`)
+  - [ ] Set up Plaid API backend routes (Link token, item public token exchange)
+- [ ] **Phase A3: AI Integration**
+  - [ ] Create API route for receipt image upload (`/api/receipt`)
+  - [ ] Integrate Google Document AI SDK to parse receipt data and return structured JSON
+  - [ ] Implement AI categorization logic module
+- [ ] **Phase A4: Analytics APIs**
+  - [ ] Create API route to aggregate spending data for dashboard charts (`/api/analytics/summary`)
+
+## Track B: Frontend, UI, & Client Logic (Partner's Tasks)
+Branch prefix: `frontend/*` or `feature/*-ui`
+**Branch:** `frontend/track-b`
+
+- [x] **Phase B1: UI Foundation**
+  - [x] Clean up v0.dev generated components and organize the `components/` folder
+  - [x] Implement dark/light mode toggle (next-themes)
+  - [x] Build reusable UI components (Buttons, Modals, Forms) using Radix/Tailwind
+- [x] **Phase B2: Core Views**
+  - [x] Implement Clerk Auth UI (`<SignIn />`, `<SignUp />`)
+  - [x] Build the real "Add Expense" form and connect to dummy data (prep for API)
+  - [x] Build the "All Expenses" data table with search and filtering UI
+- [x] **Phase B3: Complex Hooks & Dashboards**
+  - [x] Implement Plaid Link component on the frontend
+  - [x] Build the Receipt Upload UI (drag-n-drop, image preview, loading states)
+  - [x] Implement Recharts for the Dashboard (Monthly Trend, Category Doughnut)
+  - [x] Setup data fetching hooks (SWR or React Query) to consume Developer A's APIs
