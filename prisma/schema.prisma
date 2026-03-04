@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  clerkId       String         @unique
+  email         String         @unique
+  name          String?
+  homeCurrency  String         @default("USD")
+  localCurrency String?
+  transactions  Transaction[]
+  categories    Category[]
+  subscriptions Subscription[]
+  alerts        Alert[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([name, userId])
+}
+
+model Transaction {
+  id         String   @id @default(cuid())
+  amount     Float
+  merchant   String
+  date       DateTime
+  notes      String?
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plaidId    String?  @unique // For bank sync via Plaid
+  receiptUrl String? // For Google Document AI parsed receipts
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Subscription {
+  id           String   @id @default(cuid())
+  name         String
+  amount       Float
+  billingCycle String   // e.g., "MONTHLY", "YEARLY"
+  nextBillDate DateTime
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Alert {
+  id        String   @id @default(cuid())
+  message   String
+  type      String   // e.g., "BUDGET_WARNING", "SUBSCRIPTION_REMINDER"
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
