@@ -13,16 +13,10 @@ import {
   BarChart3,
   Settings,
   Wallet,
-  LogOut,
 } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { UserButtonOrFallback } from "@/components/user-button-fallback"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
 const mobileNavItems = [
@@ -63,38 +57,13 @@ export function TopNavbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
             <Bell className="size-5 text-muted-foreground" />
             <span className="absolute top-1.5 right-1.5 size-2 bg-destructive rounded-full" />
           </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 px-2">
-                <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold">
-                  JD
-                </div>
-                <span className="hidden sm:inline text-sm font-medium text-foreground">
-                  John Doe
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/settings">
-                  <Settings className="size-4 mr-2" />
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/">
-                  <LogOut className="size-4 mr-2" />
-                  Sign Out
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <UserButtonOrFallback />
         </div>
       </header>
 

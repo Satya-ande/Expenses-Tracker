@@ -10,6 +10,7 @@ import {
   Settings,
   Wallet,
 } from "lucide-react"
+import { UserButtonOrFallback } from "@/components/user-button-fallback"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -60,12 +61,14 @@ export function AppSidebar() {
       </nav>
       <div className="px-3 py-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3 px-3">
-          <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold">
-            JD
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-sidebar-foreground">John Doe</span>
-            <span className="text-xs text-muted-foreground">john@example.com</span>
+          <UserButtonOrFallback size="sm" />
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-medium text-sidebar-foreground truncate">
+              Account
+            </span>
+            <span className="text-xs text-muted-foreground truncate">
+              Manage profile
+            </span>
           </div>
         </div>
       </div>
