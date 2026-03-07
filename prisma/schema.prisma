@@ -12,7 +12,7 @@ model User {
   clerkId       String         @unique
   email         String         @unique
   name          String?
-  homeCurrency  String         @default("USD")
+  homeCurrency  String         @default("INR")
   localCurrency String?
   transactions  Transaction[]
   categories    Category[]

@@ -13,12 +13,17 @@ import { Badge } from "@/components/ui/badge"
 import { format, parseISO } from "date-fns"
 import type { Expense } from "@/lib/types"
 import { CATEGORY_BADGE_CLASSES } from "@/lib/types"
+import { useSettings } from "@/hooks/use-expenses"
+import { formatCurrency } from "@/lib/utils"
 
 interface RecentTransactionsProps {
   expenses: Expense[]
 }
 
 export function RecentTransactions({ expenses }: RecentTransactionsProps) {
+  const { data: settings } = useSettings()
+  const currency = settings?.currency || "usd"
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-2">
@@ -54,7 +59,7 @@ export function RecentTransactions({ expenses }: RecentTransactionsProps) {
                   {format(parseISO(expense.date), "MMM d, yyyy")}
                 </TableCell>
                 <TableCell className="text-right pr-6 font-semibold text-card-foreground tabular-nums">
-                  ${expense.amount.toFixed(2)}
+                  {formatCurrency(expense.amount, currency)}
                 </TableCell>
               </TableRow>
             ))}

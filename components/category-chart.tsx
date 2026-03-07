@@ -3,12 +3,17 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { CategoryExpense } from "@/lib/types"
+import { useSettings } from "@/hooks/use-expenses"
+import { formatCurrency } from "@/lib/utils"
 
 interface CategoryChartProps {
   data: CategoryExpense[]
 }
 
 export function CategoryChart({ data }: CategoryChartProps) {
+  const { data: settings } = useSettings()
+  const currency = settings?.currency || "usd"
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-2">
@@ -41,7 +46,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
                   borderRadius: "8px",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                 }}
-                formatter={(value: number) => [`$${value.toFixed(2)}`, "Amount"]}
+                formatter={(value: number) => [formatCurrency(value, currency), "Amount"]}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -55,7 +60,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
               />
               <span className="text-muted-foreground truncate">{item.name}</span>
               <span className="ml-auto font-medium text-card-foreground tabular-nums">
-                ${item.value.toFixed(0)}
+                {formatCurrency(item.value, currency)}
               </span>
             </div>
           ))}

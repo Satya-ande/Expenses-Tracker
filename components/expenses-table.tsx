@@ -37,12 +37,17 @@ import { useExpenses } from "@/hooks/use-expenses"
 import { useExpenseMutations } from "@/hooks/use-expense-mutations"
 import { CATEGORIES, CATEGORY_BADGE_CLASSES } from "@/lib/types"
 import type { Expense } from "@/lib/types"
+import { useSettings } from "@/hooks/use-expenses"
+import { formatCurrency } from "@/lib/utils"
 
 export function ExpensesTable() {
   const { deleteExpense } = useExpenseMutations()
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
+
+  const { data: settings } = useSettings()
+  const currency = settings?.currency || "usd"
 
   const { data: expenseList = [] } = useExpenses({
     search,
@@ -168,7 +173,7 @@ export function ExpensesTable() {
                       </Badge>
                     </TableCell>
                     <TableCell className="font-semibold text-card-foreground tabular-nums">
-                      ${expense.amount.toFixed(2)}
+                      {formatCurrency(expense.amount, currency)}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {format(parseISO(expense.date), "MMM d, yyyy")}

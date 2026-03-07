@@ -4,6 +4,8 @@ import { DollarSign, TrendingUp, Wallet } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import type { DashboardSummary } from "@/lib/types"
 import type { LucideIcon } from "lucide-react"
+import { useSettings } from "@/hooks/use-expenses"
+import { formatCurrency } from "@/lib/utils"
 
 // ─── Reusable stat card ──────────────────────────────────────────
 
@@ -44,10 +46,13 @@ interface SummaryCardsProps {
 }
 
 export function SummaryCards({ data }: SummaryCardsProps) {
+  const { data: settings } = useSettings()
+  const currency = settings?.currency || "usd"
+
   const cards: StatCardProps[] = [
     {
       title: "Total Expenses",
-      value: `$${data.totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      value: formatCurrency(data.totalExpenses, currency),
       change: `+${data.expenseChangePercent}% from last month`,
       icon: DollarSign,
       iconBg: "bg-destructive/10",
@@ -55,7 +60,7 @@ export function SummaryCards({ data }: SummaryCardsProps) {
     },
     {
       title: "Total Income",
-      value: `$${data.totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      value: formatCurrency(data.totalIncome, currency),
       change: `+${data.incomeChangePercent}% from last month`,
       icon: TrendingUp,
       iconBg: "bg-success/10",
@@ -63,7 +68,7 @@ export function SummaryCards({ data }: SummaryCardsProps) {
     },
     {
       title: "Remaining Balance",
-      value: `$${data.remainingBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      value: formatCurrency(data.remainingBalance, currency),
       change: `${data.savingsPercent}% of income saved`,
       icon: Wallet,
       iconBg: "bg-primary/10",

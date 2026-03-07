@@ -25,7 +25,7 @@ export default function SettingsPage() {
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [currency, setCurrency] = useState("usd")
+  const [currency, setCurrency] = useState("inr")
   const [emailNotifs, setEmailNotifs] = useState(true)
   const [budgetAlerts, setBudgetAlerts] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -46,16 +46,13 @@ export default function SettingsPage() {
     setSaving(true)
     try {
       // Replace with real API call once Spring Boot is running:
-      // await settingsApi.update({
-      //   name,
-      //   email,
-      //   currency,
-      //   emailNotifications: emailNotifs,
-      //   budgetAlerts,
-      // })
-
-      void settingsApi
-      await new Promise((r) => setTimeout(r, 400))
+      await settingsApi.update({
+        name,
+        email,
+        currency,
+        emailNotifications: emailNotifs,
+        budgetAlerts,
+      })
 
       await mutate("settings")
       setSaved(true)

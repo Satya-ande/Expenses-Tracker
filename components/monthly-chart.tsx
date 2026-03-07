@@ -11,12 +11,17 @@ import {
 } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { MonthlyExpense } from "@/lib/types"
+import { useSettings } from "@/hooks/use-expenses"
+import { formatCurrency } from "@/lib/utils"
 
 interface MonthlyChartProps {
   data: MonthlyExpense[]
 }
 
 export function MonthlyChart({ data }: MonthlyChartProps) {
+  const { data: settings } = useSettings()
+  const currency = settings?.currency || "usd"
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-2">
@@ -43,7 +48,7 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
                 tickLine={false}
                 axisLine={false}
                 tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => formatCurrency(value, currency).replace(/\.00$/, '')}
               />
               <Tooltip
                 cursor={{ fill: "var(--color-muted)", opacity: 0.5 }}
@@ -53,7 +58,7 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
                   borderRadius: "8px",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                 }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, "Expenses"]}
+                formatter={(value: number) => [formatCurrency(value, currency), "Expenses"]}
               />
               <Bar
                 dataKey="amount"

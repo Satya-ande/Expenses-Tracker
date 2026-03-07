@@ -36,37 +36,15 @@ export async function GET(req: Request) {
         const prevTotalExpenses = previousMonthTransactions._sum.amount || 0
 
         // Percentage change
-        const expenseChange = prevTotalExpenses === 0 ? 0 : ((totalExpenses - prevTotalExpenses) / prevTotalExpenses) * 100
-
-        // 2. Aggregate spending by category for Doughnut chart
-        const categoryQuery = await prisma.transaction.groupBy({
-            by: ['categoryId'],
-            where: { userId, date: { gte: currentMonthStart, lte: currentMonthEnd } },
-            _sum: { amount: true }
-        })
-
-        // Fetch category names
-        const categoryIds = categoryQuery.map(c => c.categoryId).filter(Boolean) as string[]
-        const categories = await prisma.category.findMany({
-            where: { id: { in: categoryIds } }
-        })
-
-        // Map the grouped data to category names
-        const spendingByCategory = categoryQuery.map(group => {
-            const category = categories.find(c => c.id === group.categoryId)
-            return {
-                name: category ? category.name : 'Unknown',
-                value: group._sum.amount || 0
-            }
-        })
+        const expenseChangePercent = prevTotalExpenses === 0 ? 0 : ((totalExpenses - prevTotalExpenses) / prevTotalExpenses) * 100
 
         return NextResponse.json({
-            summary: {
-                totalExpenses,
-                expenseChange,
-                currentMonth: currentMonthStart.toISOString(),
-            },
-            spendingByCategory
+            totalExpenses,
+            totalIncome: 0, // Mock income
+            remainingBalance: 0 - totalExpenses, // Mock balance
+            expenseChangePercent,
+            incomeChangePercent: 0,
+            savingsPercent: 0
         })
     } catch (error) {
         console.error('[ANALYTICS_GET]', error)

@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils"
 import { useExpenseMutations } from "@/hooks/use-expense-mutations"
 import { ReceiptUpload } from "@/components/receipt-upload"
 import { CATEGORIES } from "@/lib/types"
+import { useSettings } from "@/hooks/use-expenses"
 import type { ExpenseCreateRequest } from "@/lib/types"
 
 type FormErrors = {
@@ -44,6 +45,9 @@ export function AddExpenseForm() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitted, setSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  const { data: settings } = useSettings()
+  const currency = settings?.currency || "inr"
 
   function resetForm() {
     setTitle("")
@@ -142,7 +146,7 @@ export function AddExpenseForm() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="amount">Amount ($)</Label>
+                  <Label htmlFor="amount">Amount ({currency.toUpperCase()})</Label>
                   <Input
                     id="amount"
                     type="number"
