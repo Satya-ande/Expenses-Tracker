@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
 model User {
   id            String         @id @default(cuid())
   clerkId       String         @unique
@@ -44,6 +49,7 @@ model Transaction {
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       TransactionType @default(EXPENSE)
   plaidId    String?  @unique // For bank sync via Plaid
   receiptUrl String? // For Google Document AI parsed receipts
   createdAt  DateTime @default(now())

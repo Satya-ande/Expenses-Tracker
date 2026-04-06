@@ -1,0 +1,17 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://openrouter.ai/api",
+    "ANTHROPIC_AUTH_TOKEN": "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",
+    "ANTHROPIC_API_KEY": "",
+    "ANTHROPIC_MODEL": "openrouter/free",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "qwen/qwen3.6-plus-preview:free",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "nvidia/nemotron-3-super-120b-a12b:free",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "minimax/minimax-m2.5:free"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(/c/Users/Harsh/AppData/Local/Programs/Python/Python311/python -c \"import sys; from docx import Document; doc = Document\\(''Whitecarrot INF 18.2.26.docx''\\); print\\(''\\\\n''.join\\([p.text for p in doc.paragraphs]\\)\\)\")",
+      "mcp__plugin_claude-mem_mcp-search__search"
+    ]
+  }
+}

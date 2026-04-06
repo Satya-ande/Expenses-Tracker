@@ -4,7 +4,9 @@ __v0_devtools.tsx
 __v0_jsx-dev-runtime.ts
 
 # Common ignores
+.env
 node_modules/
 .next/
 .env*.local
 .DS_Store
+demo

@@ -19,11 +19,11 @@ const clerkWithProtection = clerkMiddleware(async (auth, req) => {
   }
 })
 
-export default function middleware(req: NextRequest) {
+export default function middleware(req: NextRequest, event: any) {
   if (!hasClerkKeys) {
     return NextResponse.next()
   }
-  return clerkWithProtection(req)
+  return clerkWithProtection(req, event)
 }
 
 export const config = {

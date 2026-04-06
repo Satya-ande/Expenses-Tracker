@@ -22,9 +22,17 @@ export async function DELETE(
             return new NextResponse('Not Found', { status: 404 })
         }
 
-        await prisma.transaction.delete({
-            where: { id }
-        })
+        try {
+            await prisma.transaction.delete({
+                where: { id }
+            })
+        } catch (err: any) {
+            // Handle race conditions where record was already deleted
+            if (err.code === 'P2025') {
+                return new NextResponse(null, { status: 204 })
+            }
+            throw err
+        }
 
         return new NextResponse(null, { status: 204 })
     } catch (error) {

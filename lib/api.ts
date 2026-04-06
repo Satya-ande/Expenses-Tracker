@@ -104,7 +104,7 @@ export const expensesApi = {
     return request<Expense[]>(`/expenses${qs ? `?${qs}` : ""}`)
   },
 
-  getById: (id: number) => request<Expense>(`/expenses/${id}`),
+  getById: (id: string) => request<Expense>(`/expenses/${id}`),
 
   create: (data: ExpenseCreateRequest) =>
     request<Expense>("/expenses", {
@@ -112,13 +112,13 @@ export const expensesApi = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: number, data: ExpenseUpdateRequest) =>
+  update: (id: string, data: ExpenseUpdateRequest) =>
     request<Expense>(`/expenses/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
 
-  delete: (id: number) =>
+  delete: (id: string) =>
     request<void>(`/expenses/${id}`, { method: "DELETE" }),
 
   getRecent: (limit = 7) =>

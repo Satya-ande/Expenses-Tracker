@@ -7,10 +7,10 @@ import { MOCK_DATA } from "./mock-data"
 
 let additions: Expense[] = []
 let nextId = 1000
-const deletions = new Set<number>()
+const deletions = new Set<string>()
 
 function generateId() {
-  return nextId++
+  return String(nextId++)
 }
 
 export const mockStore = {
@@ -32,7 +32,7 @@ export const mockStore = {
     return expense
   },
 
-  remove(id: number): void {
+  remove(id: string): void {
     const inAdditions = additions.findIndex((e) => e.id === id)
     if (inAdditions >= 0) {
       additions.splice(inAdditions, 1)

@@ -20,6 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 import { useExpenseMutations } from "@/hooks/use-expense-mutations"
@@ -37,6 +38,7 @@ type FormErrors = {
 
 export function AddExpenseForm() {
   const { addExpense } = useExpenseMutations()
+  const [type, setType] = useState<"EXPENSE" | "INCOME">("EXPENSE")
   const [title, setTitle] = useState("")
   const [amount, setAmount] = useState("")
   const [category, setCategory] = useState("")
@@ -78,6 +80,7 @@ export function AddExpenseForm() {
       amount: parseFloat(amount),
       category,
       date: format(date!, "yyyy-MM-dd"),
+      type,
       notes: notes.trim() || undefined,
     }
 
@@ -97,7 +100,7 @@ export function AddExpenseForm() {
       <Card className="shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-card-foreground">
-            New Expense
+            New {type === "INCOME" ? "Income" : "Expense"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -115,6 +118,13 @@ export function AddExpenseForm() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <Tabs value={type} onValueChange={(v) => { setType(v as "EXPENSE" | "INCOME"); setCategory(""); }} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="EXPENSE">Expense</TabsTrigger>
+                  <TabsTrigger value="INCOME">Income</TabsTrigger>
+                </TabsList>
+              </Tabs>
+
               <div className="flex flex-col gap-2">
                 <Label className="flex items-center gap-2">
                   <Receipt className="size-4" />
@@ -178,7 +188,7 @@ export function AddExpenseForm() {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {CATEGORIES.map((cat) => (
+                      {(type === "INCOME" ? ['Salary', 'Bonus', 'Side Hustle', 'Other'] : CATEGORIES.filter(c => !['Salary', 'Bonus', 'Side Hustle'].includes(c))).map((cat) => (
                         <SelectItem key={cat} value={cat}>
                           {cat}
                         </SelectItem>
@@ -236,7 +246,7 @@ export function AddExpenseForm() {
                 className="w-full sm:w-auto sm:self-end mt-2"
                 disabled={isLoading}
               >
-                {isLoading ? "Adding..." : "Add Expense"}
+                {isLoading ? "Saving..." : `Save ${type === "INCOME" ? "Income" : "Expense"}`}
               </Button>
             </form>
           )}

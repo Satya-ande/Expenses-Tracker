@@ -33,7 +33,7 @@ export function useExpenseMutations() {
     return expense
   }
 
-  const deleteExpense = async (id: number): Promise<void> => {
+  const deleteExpense = async (id: string): Promise<void> => {
     if (USE_API) {
       await expensesApi.delete(id)
     } else {

@@ -1,11 +1,12 @@
 // ─── Domain Models (mirrors Spring Boot DTOs) ────────────────────
 
 export interface Expense {
-  id: number
+  id: string
   title: string
   amount: number
   category: string
   date: string // ISO date string (yyyy-MM-dd)
+  type?: "INCOME" | "EXPENSE"
   notes?: string
   createdAt?: string
   updatedAt?: string
@@ -16,6 +17,7 @@ export interface ExpenseCreateRequest {
   amount: number
   category: string
   date: string
+  type?: "INCOME" | "EXPENSE"
   notes?: string
 }
 
@@ -24,6 +26,7 @@ export interface ExpenseUpdateRequest {
   amount?: number
   category?: string
   date?: string
+  type?: "INCOME" | "EXPENSE"
   notes?: string
 }
 
@@ -104,6 +107,9 @@ export const CATEGORIES = [
   "Healthcare",
   "Education",
   "Travel",
+  "Salary",
+  "Bonus",
+  "Side Hustle",
   "Other",
 ] as const
 
@@ -118,6 +124,9 @@ export const CATEGORY_COLORS: Record<string, string> = {
   Healthcare: "var(--color-success)",
   Education: "var(--color-primary)",
   Travel: "var(--color-warning)",
+  Salary: "var(--color-success)",
+  Bonus: "var(--color-chart-2)",
+  "Side Hustle": "var(--color-primary)",
   Other: "var(--color-muted-foreground)",
 }
 
@@ -130,5 +139,8 @@ export const CATEGORY_BADGE_CLASSES: Record<string, string> = {
   Healthcare: "bg-success/15 text-success",
   Education: "bg-primary/15 text-primary",
   Travel: "bg-warning/15 text-warning",
+  Salary: "bg-success/15 text-success",
+  Bonus: "bg-chart-2/15 text-chart-2",
+  "Side Hustle": "bg-primary/15 text-primary",
   Other: "bg-muted text-muted-foreground",
 }

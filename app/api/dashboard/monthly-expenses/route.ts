@@ -1,20 +1,37 @@
 import { NextResponse } from 'next/server'
-// import { auth } from '@clerk/nextjs/server'
 import prisma from '@/lib/prisma'
+import { subMonths, startOfMonth, format } from 'date-fns'
 
 export async function GET() {
     try {
-        // const { userId } = auth()
-        // if (!userId) return new NextResponse('Unauthorized', { status: 401 })
-
         const userId = "test_user_id"
+        const now = new Date()
+        const sixMonthsAgo = startOfMonth(subMonths(now, 5))
 
-        // Mocking Monthly data logic for now
-        const formatted = [
-            { month: "Jan", amount: 0 },
-            { month: "Feb", amount: 0 },
-            { month: "Mar", amount: 0 },
-        ]
+        const expenses = await prisma.transaction.findMany({
+            where: { userId, date: { gte: sixMonthsAgo }, type: "EXPENSE" },
+            select: { date: true, amount: true }
+        })
+
+        // Initialize last 6 months with 0
+        const monthlyGroups: Record<string, number> = {}
+        for (let i = 0; i < 6; i++) {
+             const m = format(subMonths(now, i), 'MMM')
+             monthlyGroups[m] = 0
+        }
+
+        expenses.forEach(e => {
+             const m = format(e.date, 'MMM')
+             if (monthlyGroups[m] !== undefined) {
+                 monthlyGroups[m] += e.amount
+             }
+        })
+
+        // Reverse to get oldest first
+        const formatted = Object.keys(monthlyGroups).reverse().map(m => ({
+            month: m,
+            amount: monthlyGroups[m]
+        }))
 
         return NextResponse.json(formatted)
     } catch (error) {

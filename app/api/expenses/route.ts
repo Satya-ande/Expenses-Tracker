@@ -23,6 +23,7 @@ export async function GET(req: Request) {
             amount: e.amount,
             category: e.category?.name || "Other",
             date: e.date.toISOString().split('T')[0],
+            type: e.type,
             notes: e.notes
         }))
 
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
         })
 
         const body = await req.json()
-        const { amount, title, date, category, notes, merchant } = body
+        const { amount, title, date, category, notes, merchant, type } = body
 
         // Frontend uses 'title', backend schema uses 'merchant'
         const merchantName = title || merchant
@@ -82,6 +83,7 @@ export async function POST(req: Request) {
                 merchant: merchantName,
                 date: new Date(date),
                 categoryId,
+                type: type === "INCOME" ? "INCOME" : "EXPENSE",
                 notes
             },
             include: { category: true }
@@ -93,6 +95,7 @@ export async function POST(req: Request) {
             amount: expense.amount,
             category: expense.category?.name || "Other",
             date: expense.date.toISOString().split('T')[0],
+            type: expense.type,
             notes: expense.notes
         }
 
